@@ -1,71 +1,62 @@
 package co.edu.poli.corte3.controlador;
 
-import co.edu.poli.corte3.modelo.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import co.edu.poli.corte3.modelo.ProductoModel;
 import co.edu.poli.corte3.vista.Vista;
 
-import java.util.ArrayList;
-
 public class Controlador {
+    private ProductoModel modelo;
     private Vista vista;
-    private Observable observable;
-    private ArrayList<Producto> productos;
-    private Memento memento;
 
-    public Controlador(Vista vista) {
+    public Controlador(ProductoModel modelo, Vista vista) {
+        this.modelo = modelo;
         this.vista = vista;
-        this.productos = new ArrayList<>();
-        this.observable = new Observable();
-        this.observable.agregarObserver(vista); // Registrar la vista como observador
 
-        // Establecer los listeners de los botones
-        this.vista.getBtnAgregar().addActionListener(e -> agregarProducto());
-        this.vista.getBtnModificar().addActionListener(e -> modificarProductoSeleccionado());
-        this.vista.getBtnDeshacer().addActionListener(e -> deshacerCambios());
-    }
+        // Registrar vista como observador del modelo
+        this.modelo.agregarObserver(this.vista);
 
-    private void agregarProducto() {
-        guardarEstado();
-        String nombre = vista.getNombreProducto();
-        double precio = vista.getPrecioProducto();
-        if (nombre != null && !nombre.isEmpty() && precio > 0) {
-            productos.add(new Producto(nombre, precio));
-            actualizarVista();
-            observable.notificarObservers(); // Notificar a los observadores
-        }
-    }
+        // Mostrar la vista
+        this.vista.setVisible(true);
 
-    private void modificarProductoSeleccionado() {
-        int index = vista.getProductoSeleccionadoIndex();
-        if (index == -1) {
-            vista.mostrarMensaje("Debe seleccionar un producto para modificarlo.");
-            return;
-        }
-        if (index >= 0 && index < productos.size()) {
-            guardarEstado();
-            String nuevoNombre = vista.getNombreProducto();
-            double nuevoPrecio = vista.getPrecioProducto();
-            if (nuevoNombre != null && nuevoPrecio > 0) {
-                productos.get(index).setNombre(nuevoNombre);
-                productos.get(index).setPrecio(nuevoPrecio);
-                actualizarVista();
-                observable.notificarObservers(); // Notificar a los observadores
+        // Acción para agregar producto
+        this.vista.getBtnAgregar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nombre = vista.getNombreProducto();
+                double precio = vista.getPrecioProducto();
+
+                if (nombre.isEmpty() || precio <= 0) {
+                    vista.mostrarMensaje("Datos inválidos. Por favor, complete todos los campos correctamente.");
+                } else {
+                    modelo.agregarProducto(nombre, precio);
+                }
             }
-        }
-    }
+        });
 
-    private void deshacerCambios() {
-        if (memento != null) {
-            productos = memento.getProductos();  // Restaurar estado anterior
-            actualizarVista();
-            observable.notificarObservers(); // Notificar a los observadores
-        }
-    }
+        // Acción para modificar producto
+        this.vista.getBtnModificar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = vista.getProductoSeleccionadoIndex();
+                String nombre = vista.getNombreProducto();
+                double precio = vista.getPrecioProducto();
 
-    private void guardarEstado() {
-        memento = new Memento(productos);  // Guardar el estado actual
-    }
+                if (index >= 0 && !nombre.isEmpty() && precio > 0) {
+                    modelo.modificarProducto(index, nombre, precio);
+                } else {
+                    vista.mostrarMensaje("Seleccione un producto y asegúrese de ingresar datos válidos.");
+                }
+            }
+        });
 
-    private void actualizarVista() {
-        vista.actualizarLista(productos);  // Actualizar la vista con la lista de productos
+        // Acción para deshacer cambios
+        this.vista.getBtnDeshacer().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modelo.deshacerCambios();
+            }
+        });
     }
 }

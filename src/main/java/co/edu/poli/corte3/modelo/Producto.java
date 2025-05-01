@@ -9,6 +9,15 @@ public class Producto {
         this.precio = precio;
     }
 
+    public ProductoMemento guardarEstado() {
+        return new ProductoMemento(nombre, precio);
+    }
+
+    public void restaurarEstado(ProductoMemento memento) {
+        this.nombre = memento.getNombre();
+        this.precio = memento.getPrecio();
+    }
+
     public String getNombre() {
         return nombre;
     }

@@ -1,16 +1,15 @@
 package co.edu.poli.corte3;
 
-import co.edu.poli.corte3.controlador.Controlador;
+import co.edu.poli.corte3.modelo.ProductoModel;
 import co.edu.poli.corte3.vista.Vista;
-
-import javax.swing.*;
+import co.edu.poli.corte3.controlador.Controlador;
 
 public class App {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            ProductoModel modelo = new ProductoModel();
             Vista vista = new Vista();
-            vista.setVisible(true);
-            new Controlador(vista);  // Crear e iniciar el controlador
+            new Controlador(modelo, vista);
         });
     }
 }
