@@ -11,7 +11,7 @@ public class Observable {
 
     public void notificarObservers() {
         for (Observer observer : observers) {
-            observer.actualizar();  // Notificar a todos los observadores
+            observer.actualizar(null);  // Notificar a todos los observadores
         }
     }
 }

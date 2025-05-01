@@ -2,63 +2,66 @@ package co.edu.poli.corte3.modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
-public class ProductoModel implements Subject {
+public class ProductoModel {
     private List<Producto> productos;
-    private List<Observer> observers;
-    private Caretaker caretaker;
+    private Stack<ProductoMemento> historial;
+    private List<Observer> observadores;
 
     public ProductoModel() {
         productos = new ArrayList<>();
-        observers = new ArrayList<>();
-        caretaker = new Caretaker();
+        historial = new Stack<>();
+        observadores = new ArrayList<>();
     }
 
-    public void agregarProducto(String nombre, double precio) {
-        Producto producto = new Producto(nombre, precio);
+    public void agregarProducto(Producto producto) {
+        guardarEstado();
         productos.add(producto);
-        notificarObservers();
+        notificarObservadores();
     }
 
-    public void modificarProducto(int index, String nuevoNombre, double nuevoPrecio) {
+    public void modificarProducto(int index, String nombre, double precio) {
         if (index >= 0 && index < productos.size()) {
-            Producto producto = productos.get(index);
-            caretaker.guardarMemento(producto.guardarEstado());
-            producto.setNombre(nuevoNombre);
-            producto.setPrecio(nuevoPrecio);
-            notificarObservers();
+            guardarEstado();
+            Producto p = productos.get(index);
+            p.setNombre(nombre);
+            p.setPrecio(precio);
+            notificarObservadores();
         }
     }
 
-    public void deshacerCambios() {
-        if (caretaker.hayCambios() && !productos.isEmpty()) {
-            Producto producto = productos.get(productos.size() - 1);
-            ProductoMemento memento = caretaker.deshacer();
-            if (memento != null) {
-                producto.restaurarEstado(memento);
-                notificarObservers();
+    public void deshacer() {
+        if (!historial.isEmpty()) {
+            ProductoMemento memento = historial.pop();
+            productos = new ArrayList<>();
+            for (Producto p : memento.getEstado()) {
+                productos.add(new Producto(p));
             }
+            notificarObservadores();
         }
+    }
+
+    private void guardarEstado() {
+        List<Producto> copia = new ArrayList<>();
+        for (Producto p : productos) {
+            copia.add(new Producto(p));
+        }
+        historial.push(new ProductoMemento(copia));
     }
 
     public List<Producto> getProductos() {
         return productos;
     }
 
-    @Override
-    public void agregarObserver(Observer o) {
-        observers.add(o);
+    public void agregarObservador(Observer o) {
+        observadores.add(o);
     }
 
-    @Override
-    public void removerObserver(Observer o) {
-        observers.remove(o);
-    }
-
-    @Override
-    public void notificarObservers() {
-        for (Observer o : observers) {
-            o.actualizar();
+    public void notificarObservadores() {
+        for (Observer o : observadores) {
+            o.actualizar(new ArrayList<>(productos));
         }
     }
+    
 }

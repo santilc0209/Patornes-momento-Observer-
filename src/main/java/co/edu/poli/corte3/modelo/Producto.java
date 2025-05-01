@@ -9,25 +9,21 @@ public class Producto {
         this.precio = precio;
     }
 
-    public ProductoMemento guardarEstado() {
-        return new ProductoMemento(nombre, precio);
-    }
-
-    public void restaurarEstado(ProductoMemento memento) {
-        this.nombre = memento.getNombre();
-        this.precio = memento.getPrecio();
+    public Producto(Producto p) {
+        this.nombre = p.nombre;
+        this.precio = p.precio;
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
     public double getPrecio() {
         return precio;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public void setPrecio(double precio) {

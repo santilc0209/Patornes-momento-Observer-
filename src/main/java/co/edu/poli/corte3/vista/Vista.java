@@ -2,8 +2,8 @@ package co.edu.poli.corte3.vista;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
+
 import co.edu.poli.corte3.modelo.Producto;
 import co.edu.poli.corte3.modelo.Observer;
 
@@ -17,7 +17,7 @@ public class Vista extends JFrame implements Observer {
     private DefaultListModel<Producto> listModel;
 
     public Vista() {
-        setTitle("Gestión de Productos - Patrón Memento y Observer");
+        setTitle("Gestión de Productos - Memento y Observer");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -62,9 +62,9 @@ public class Vista extends JFrame implements Observer {
     }
 
     public void actualizarLista(List<Producto> productos) {
-        listModel.clear();  // Limpiar la lista antes de agregar los nuevos productos
+        listModel.clear();
         for (Producto p : productos) {
-            listModel.addElement(p);  // Añadir cada producto a la lista
+            listModel.addElement(p);
         }
     }
 
@@ -89,11 +89,8 @@ public class Vista extends JFrame implements Observer {
     }
 
     @Override
-    public void actualizar() {
-        List<Producto> productosList = new ArrayList<>();
-        for (int i = 0; i < listModel.getSize(); i++) {
-            productosList.add(listModel.getElementAt(i));
-        }
-        actualizarLista(productosList);  // Actualiza la lista con los productos del modelo
-    }
+    public void actualizar(List<Producto> productos) {
+    actualizarLista(productos);
+}
+
 }

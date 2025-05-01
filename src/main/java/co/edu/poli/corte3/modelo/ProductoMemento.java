@@ -1,19 +1,15 @@
 package co.edu.poli.corte3.modelo;
 
+import java.util.List;
+
 public class ProductoMemento {
-    private final String nombre;
-    private final double precio;
+    private final List<Producto> estado;
 
-    public ProductoMemento(String nombre, double precio) {
-        this.nombre = nombre;
-        this.precio = precio;
+    public ProductoMemento(List<Producto> estado) {
+        this.estado = estado;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public double getPrecio() {
-        return precio;
+    public List<Producto> getEstado() {
+        return estado;
     }
 }

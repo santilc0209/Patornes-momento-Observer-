@@ -1,10 +1,10 @@
 package co.edu.poli.corte3.controlador;
 
+import co.edu.poli.corte3.modelo.*;
+import co.edu.poli.corte3.vista.Vista;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import co.edu.poli.corte3.modelo.ProductoModel;
-import co.edu.poli.corte3.vista.Vista;
 
 public class Controlador {
     private ProductoModel modelo;
@@ -14,49 +14,55 @@ public class Controlador {
         this.modelo = modelo;
         this.vista = vista;
 
-        // Registrar vista como observador del modelo
-        this.modelo.agregarObserver(this.vista);
+        this.modelo.agregarObservador(vista);
 
-        // Mostrar la vista
-        this.vista.setVisible(true);
-
-        // Acción para agregar producto
         this.vista.getBtnAgregar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre = vista.getNombreProducto();
-                double precio = vista.getPrecioProducto();
-
-                if (nombre.isEmpty() || precio <= 0) {
-                    vista.mostrarMensaje("Datos inválidos. Por favor, complete todos los campos correctamente.");
-                } else {
-                    modelo.agregarProducto(nombre, precio);
-                }
+                agregarProducto();
             }
         });
 
-        // Acción para modificar producto
         this.vista.getBtnModificar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int index = vista.getProductoSeleccionadoIndex();
-                String nombre = vista.getNombreProducto();
-                double precio = vista.getPrecioProducto();
-
-                if (index >= 0 && !nombre.isEmpty() && precio > 0) {
-                    modelo.modificarProducto(index, nombre, precio);
-                } else {
-                    vista.mostrarMensaje("Seleccione un producto y asegúrese de ingresar datos válidos.");
-                }
+                modificarProducto();
             }
         });
 
-        // Acción para deshacer cambios
         this.vista.getBtnDeshacer().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                modelo.deshacerCambios();
+                modelo.deshacer();
             }
         });
+
+        this.vista.setVisible(true);
+    }
+
+    private void agregarProducto() {
+        String nombre = vista.getNombreProducto();
+        double precio = vista.getPrecioProducto();
+
+        if (nombre.isEmpty() || precio <= 0) {
+            vista.mostrarMensaje("Nombre y precio válidos son obligatorios.");
+            return;
+        }
+
+        Producto producto = new Producto(nombre, precio);
+        modelo.agregarProducto(producto);
+    }
+
+    private void modificarProducto() {
+        int index = vista.getProductoSeleccionadoIndex();
+        String nombre = vista.getNombreProducto();
+        double precio = vista.getPrecioProducto();
+
+        if (index < 0 || nombre.isEmpty() || precio <= 0) {
+            vista.mostrarMensaje("Seleccione un producto válido y complete los campos.");
+            return;
+        }
+
+        modelo.modificarProducto(index, nombre, precio);
     }
 }

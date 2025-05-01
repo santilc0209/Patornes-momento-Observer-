@@ -1,6 +1,7 @@
 package co.edu.poli.corte3.modelo;
 
+import java.util.List;
+
 public interface Observer {
-    void actualizar();  // Método a ser implementado por los observadores
+    void actualizar(List<Producto> productos);
 }
-// Este método se llamará cuando el observable notifique a sus observadores sobre un cambio en su estado
